@@ -8,6 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -84,13 +85,17 @@ export default function Login() {
                   className="w-full pl-10 pr-10 py-3 rounded-lg bg-surface border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors" 
                   id="password" 
                   placeholder="••••••••" 
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <button className="absolute right-3 text-outline hover:text-on-surface transition-colors flex items-center" type="button">
-                  <span className="material-symbols-outlined">visibility</span>
+                <button 
+                  className="absolute right-3 text-outline hover:text-on-surface transition-colors flex items-center" 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <span className="material-symbols-outlined">{showPassword ? "visibility_off" : "visibility"}</span>
                 </button>
               </div>
             </div>
