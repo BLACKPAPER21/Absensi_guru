@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import CameraCapture from '../components/CameraCapture';
+import { API_BASE } from '../utils/api';
 
 export default function DashboardGuru() {
   const [attendanceStatus, setAttendanceStatus] = useState(null);
@@ -29,13 +30,13 @@ export default function DashboardGuru() {
       const token = localStorage.getItem('token');
       
       // Fetch Attendance History
-      const attRes = await fetch('http://localhost:5000/api/attendance/history', {
+      const attRes = await fetch(`${API_BASE}/api/attendance/history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const attData = await attRes.json();
       
       // Fetch Leave Requests
-      const leaveRes = await fetch('http://localhost:5000/api/leave/my-requests', {
+      const leaveRes = await fetch(`${API_BASE}/api/leave/my-requests`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const leaveData = await leaveRes.json();
@@ -112,8 +113,8 @@ export default function DashboardGuru() {
       if (!token) throw new Error('You are not logged in');
 
       const endpoint = cameraAction === 'check-in' 
-        ? 'http://localhost:5000/api/attendance/check-in' 
-        : 'http://localhost:5000/api/attendance/check-out';
+        ? `${API_BASE}/api/attendance/check-in` 
+        : `${API_BASE}/api/attendance/check-out`;
 
       const response = await fetch(endpoint, {
         method: 'POST',

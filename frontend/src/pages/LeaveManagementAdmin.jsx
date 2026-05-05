@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { API_BASE } from '../utils/api';
 
 export default function LeaveManagementAdmin() {
   const [requests, setRequests] = useState([]);
@@ -13,7 +14,7 @@ export default function LeaveManagementAdmin() {
   const fetchRequests = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/leave/all', {
+      const res = await fetch(`${API_BASE}/api/leave/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -37,7 +38,7 @@ export default function LeaveManagementAdmin() {
         if (adminNote === null) return; // Cancelled
       }
 
-      const res = await fetch(`http://localhost:5000/api/leave/${id}/status`, {
+      const res = await fetch(`${API_BASE}/api/leave/${id}/status`, {
         method: 'PUT',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -168,7 +169,7 @@ export default function LeaveManagementAdmin() {
                     <td className="px-6 py-4 max-w-xs">
                       <p className="font-body-sm text-sm text-on-surface-variant truncate mb-1">"{req.reason}"</p>
                       {req.attachment && (
-                        <a href={`http://localhost:5000${req.attachment}`} target="_blank" rel="noreferrer" className="text-[11px] text-secondary hover:underline flex items-center gap-1">
+                        <a href={`${API_BASE}${req.attachment}`} target="_blank" rel="noreferrer" className="text-[11px] text-secondary hover:underline flex items-center gap-1">
                           <span className="material-symbols-outlined text-[12px]">attach_file</span> Lihat Dokumen
                         </a>
                       )}

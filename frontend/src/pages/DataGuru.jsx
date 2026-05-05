@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import * as faceapi from 'face-api.js';
+import { API_BASE } from '../utils/api';
 
 export default function DataGuru() {
   const [teachers, setTeachers] = useState([]);
@@ -39,7 +40,7 @@ export default function DataGuru() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/users/teachers', {
+      const res = await fetch(`${API_BASE}/api/users/teachers`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -115,8 +116,8 @@ export default function DataGuru() {
     try {
       const token = localStorage.getItem('token');
       const url = modalMode === 'add' 
-        ? 'http://localhost:5000/api/users/teachers'
-        : `http://localhost:5000/api/users/teachers/${currentTeacher.id}`;
+        ? `${API_BASE}/api/users/teachers`
+        : `${API_BASE}/api/users/teachers/${currentTeacher.id}`;
       const method = modalMode === 'add' ? 'POST' : 'PUT';
 
       const res = await fetch(url, {
@@ -145,7 +146,7 @@ export default function DataGuru() {
     
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/users/teachers/${id}`, {
+      const res = await fetch(`${API_BASE}/api/users/teachers/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

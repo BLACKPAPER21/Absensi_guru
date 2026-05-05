@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { API_BASE } from '../utils/api';
 
 export default function Laporan() {
   const [month, setMonth] = useState('2026-05');
@@ -10,8 +11,8 @@ export default function Laporan() {
     try {
       const token = localStorage.getItem('token');
       const endpoint = format === 'pdf' 
-        ? `http://localhost:5000/api/reports/monthly/pdf?month=${month}`
-        : `http://localhost:5000/api/reports/monthly?month=${month}`;
+        ? `${API_BASE}/api/reports/monthly/pdf?month=${month}`
+        : `${API_BASE}/api/reports/monthly?month=${month}`;
 
       const response = await fetch(endpoint, {
         headers: { 'Authorization': `Bearer ${token}` }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LabelList } from 'recharts';
+import { API_BASE } from '../utils/api';
 
 const mockTrendData = [
   { name: '1 Mei', hadir: 45, terlambat: 5 },
@@ -39,13 +40,13 @@ export default function DashboardKepsek() {
       const token = localStorage.getItem('token');
       
       // Fetch Stats
-      const statsRes = await fetch('http://localhost:5000/api/attendance/stats', {
+      const statsRes = await fetch(`${API_BASE}/api/attendance/stats`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const statsData = await statsRes.json();
       
       // Fetch Today's list
-      const todayRes = await fetch('http://localhost:5000/api/attendance/today', {
+      const todayRes = await fetch(`${API_BASE}/api/attendance/today`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const todayData = await todayRes.json();

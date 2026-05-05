@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { API_BASE } from '../utils/api';
 
 export default function FormIzin() {
   const [leaveHistory, setLeaveHistory] = useState([]);
@@ -21,7 +22,7 @@ export default function FormIzin() {
   const fetchLeaveHistory = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/leave/my-requests', {
+      const res = await fetch(`${API_BASE}/api/leave/my-requests`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -60,7 +61,7 @@ export default function FormIzin() {
         data.append('attachment', file);
       }
 
-      const res = await fetch('http://localhost:5000/api/leave/request', {
+      const res = await fetch(`${API_BASE}/api/leave/request`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: data
@@ -263,7 +264,7 @@ export default function FormIzin() {
                       
                       <div className="flex items-center gap-4 text-[11px] text-on-surface-variant">
                         {req.attachment && (
-                          <a href={`http://localhost:5000${req.attachment}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-secondary">
+                          <a href={`${API_BASE}${req.attachment}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-secondary">
                             <span className="material-symbols-outlined text-[14px]">attach_file</span> Lihat Dokumen
                           </a>
                         )}

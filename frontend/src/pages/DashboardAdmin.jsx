@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { API_BASE } from '../utils/api';
 
 export default function DashboardAdmin() {
   const [todayRecords, setTodayRecords] = useState([]);
@@ -16,7 +17,7 @@ export default function DashboardAdmin() {
   const fetchTotalTeachers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/users/teachers', {
+      const response = await fetch(`${API_BASE}/api/users/teachers`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -31,7 +32,7 @@ export default function DashboardAdmin() {
   const fetchTodayAttendance = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/attendance/today', {
+      const response = await fetch(`${API_BASE}/api/attendance/today`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -147,8 +148,8 @@ export default function DashboardAdmin() {
                     </td>
                     <td className="p-4">
                       {record.photoIn ? (
-                        <a href={`http://localhost:5000${record.photoIn}`} target="_blank" rel="noreferrer" className="block w-12 h-12 rounded-lg overflow-hidden border border-outline-variant hover:opacity-80 transition-opacity">
-                          <img src={`http://localhost:5000${record.photoIn}`} alt="Selfie" className="w-full h-full object-cover" />
+                        <a href={`${API_BASE}${record.photoIn}`} target="_blank" rel="noreferrer" className="block w-12 h-12 rounded-lg overflow-hidden border border-outline-variant hover:opacity-80 transition-opacity">
+                          <img src={`${API_BASE}${record.photoIn}`} alt="Selfie" className="w-full h-full object-cover" />
                         </a>
                       ) : (
                         <div className="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant border border-outline-variant">

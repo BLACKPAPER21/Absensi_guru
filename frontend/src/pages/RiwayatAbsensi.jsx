@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { API_BASE } from '../utils/api';
 
 export default function RiwayatAbsensi() {
   const [records, setRecords] = useState([]);
@@ -12,7 +13,7 @@ export default function RiwayatAbsensi() {
   const fetchHistory = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/attendance/history', {
+      const res = await fetch(`${API_BASE}/api/attendance/history`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -108,8 +109,8 @@ export default function RiwayatAbsensi() {
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap flex justify-center gap-3 items-center">
                       {record.photoIn ? (
-                        <a href={`http://localhost:5000${record.photoIn}`} target="_blank" rel="noreferrer" className="relative block group/img">
-                          <img src={`http://localhost:5000${record.photoIn}`} alt="Check In" className="w-12 h-12 rounded-lg object-cover border border-outline-variant group-hover/img:border-secondary transition-all" />
+                        <a href={`${API_BASE}${record.photoIn}`} target="_blank" rel="noreferrer" className="relative block group/img">
+                          <img src={`${API_BASE}${record.photoIn}`} alt="Check In" className="w-12 h-12 rounded-lg object-cover border border-outline-variant group-hover/img:border-secondary transition-all" />
                           <div className="absolute -bottom-2 -right-2 bg-secondary text-white text-[8px] font-bold px-1.5 py-0.5 rounded shadow-sm">IN</div>
                         </a>
                       ) : (
@@ -117,8 +118,8 @@ export default function RiwayatAbsensi() {
                       )}
                       
                       {record.photoOut ? (
-                        <a href={`http://localhost:5000${record.photoOut}`} target="_blank" rel="noreferrer" className="relative block group/img">
-                          <img src={`http://localhost:5000${record.photoOut}`} alt="Check Out" className="w-12 h-12 rounded-lg object-cover border border-outline-variant group-hover/img:border-secondary transition-all" />
+                        <a href={`${API_BASE}${record.photoOut}`} target="_blank" rel="noreferrer" className="relative block group/img">
+                          <img src={`${API_BASE}${record.photoOut}`} alt="Check Out" className="w-12 h-12 rounded-lg object-cover border border-outline-variant group-hover/img:border-secondary transition-all" />
                           <div className="absolute -bottom-2 -right-2 bg-outline text-white text-[8px] font-bold px-1.5 py-0.5 rounded shadow-sm">OUT</div>
                         </a>
                       ) : (
