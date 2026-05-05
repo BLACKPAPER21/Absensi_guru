@@ -19,11 +19,15 @@
       "dest": "/backend/src/server.js"
     },
     {
-      "src": "/assets/(.*)",
+      "src": "/uploads/(.*)",
+      "dest": "/backend/src/server.js"
+    },
+    {
+      "src": "^/assets/(.*)",
       "dest": "/frontend/dist/assets/$1"
     },
     {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map))",
+      "src": "^/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|webp)$)",
       "dest": "/frontend/dist/$1"
     },
     {
