@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
+
+@theme {
+  --color-tertiary-fixed: #e0e3e5;
+  --color-inverse-primary: #bec6e0;
+  --color-tertiary-fixed-dim: #c4c7c9;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-background: #0b1c30;
+  --color-inverse-on-surface: #eaf1ff;
+  --color-on-error: #ffffff;
+  --color-secondary: #006a61;
+  --color-primary-fixed: #dae2fd;
+  --color-tertiary: #000000;
+  --color-surface-container-high: #dce9ff;
+  --color-on-primary-fixed: #131b2e;
+  --color-surface-tint: #565e74;
+  --color-primary-container: #131b2e;
+  --color-tertiary-container: #191c1e;
+  --color-primary-fixed-dim: #bec6e0;
+  --color-on-tertiary-fixed: #191c1e;
+  --color-background: #f8f9ff;
+  --color-inverse-surface: #213145;
+  --color-surface-bright: #f8f9ff;
+  --color-on-secondary-fixed-variant: #005049;
+  --color-on-primary-fixed-variant: #3f465c;
+  --color-secondary-fixed: #89f5e7;
+  --color-on-tertiary: #ffffff;
+  --color-outline: #76777d;
+  --color-on-surface-variant: #45464d;
+  --color-secondary-container: #86f2e4;
+  --color-on-tertiary-container: #818486;
+  --color-surface: #f8f9ff;
+  --color-error-container: #ffdad6;
+  --color-error: #ba1a1a;
+  --color-primary: #000000;
+  --color-on-error-container: #93000a;
+  --color-surface-container-highest: #d3e4fe;
+  --color-outline-variant: #c6c6cd;
+  --color-on-primary-container: #7c839b;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-variant: #d3e4fe;
+  --color-on-surface: #0b1c30;
+  --color-on-primary: #ffffff;
+  --color-on-tertiary-fixed-variant: #444749;
+  --color-surface-dim: #cbdbf5;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #006f66;
+  --color-secondary-fixed-dim: #6bd8cb;
+  --color-on-secondary-fixed: #00201d;
+
+  --radius-DEFAULT: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+
+  --spacing-sidebar-width: 280px;
+  --spacing-stack-sm: 4px;
+  --spacing-stack-md: 12px;
+  --spacing-stack-lg: 24px;
+  --spacing-base: 8px;
+  --spacing-margin-page: 40px;
+  --spacing-container-max: 1440px;
+  --spacing-gutter: 24px;
+
+  --font-body-md: 'Inter';
+  --font-label-sm: 'Inter';
+  --font-headline-lg: 'Inter';
+  --font-headline-md: 'Inter';
+  --font-body-lg: 'Inter';
+  --font-display-lg: 'Inter';
+  --font-label-md: 'Inter';
+  
+  /* Text Sizes are managed differently in Tailwind V4, we can define custom utilities later if needed, but for now we map them directly if possible, or use standard text-* classes */
+}
+
+@utility font-body-md {
+  font-family: 'Inter';
+}
+@utility font-label-sm {
+  font-family: 'Inter';
+}
+@utility font-headline-lg {
+  font-family: 'Inter';
+}
+@utility font-headline-md {
+  font-family: 'Inter';
+}
+@utility font-body-lg {
+  font-family: 'Inter';
+}
+@utility font-display-lg {
+  font-family: 'Inter';
+}
+@utility font-label-md {
+  font-family: 'Inter';
+}
+
+@utility text-body-md {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+@utility text-label-sm {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+@utility text-headline-lg {
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+@utility text-headline-md {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+@utility text-body-lg {
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+}
+@utility text-display-lg {
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+@utility text-label-md {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  margin: 0;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}

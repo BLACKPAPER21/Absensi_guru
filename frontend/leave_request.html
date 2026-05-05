@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SIGURU - Leave Request</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2d3135",
+                        "outline": "#707881",
+                        "surface-container": "#ebeef4",
+                        "surface-container-high": "#e5e8ee",
+                        "inverse-on-surface": "#eef1f7",
+                        "surface-tint": "#006398",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f7f9ff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#001d31",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f7f9ff",
+                        "on-background": "#181c20",
+                        "on-tertiary-fixed-variant": "#384953",
+                        "secondary-fixed": "#c0e8ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#bfc7d2",
+                        "primary-container": "#007bb9",
+                        "secondary": "#006686",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#181c20",
+                        "surface-container-highest": "#dfe3e8",
+                        "primary-fixed": "#cce5ff",
+                        "on-primary-container": "#fdfcff",
+                        "surface-dim": "#d7dae0",
+                        "on-secondary-fixed": "#001e2b",
+                        "on-surface-variant": "#3f4850",
+                        "on-secondary-container": "#005b78",
+                        "tertiary-container": "#667781",
+                        "primary-fixed-dim": "#93ccff",
+                        "tertiary-fixed-dim": "#b7c9d5",
+                        "tertiary-fixed": "#d3e5f1",
+                        "surface-variant": "#dfe3e8",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#93ccff",
+                        "primary": "#006194",
+                        "on-tertiary-container": "#fbfcff",
+                        "on-primary-fixed-variant": "#004b73",
+                        "surface-container-low": "#f1f4fa",
+                        "on-secondary-fixed-variant": "#004d66",
+                        "tertiary": "#4e5e68",
+                        "on-tertiary-fixed": "#0c1e26",
+                        "secondary-fixed-dim": "#7bd1fa",
+                        "secondary-container": "#7ed4fd",
+                        "surface": "#f7f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "48px",
+                        "sm": "8px",
+                        "container-max": "1440px",
+                        "lg": "24px",
+                        "gutter": "24px",
+                        "md": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["30px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "title-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- SideNavBar Anchor -->
+<aside class="bg-sky-50 dark:bg-slate-950 text-sky-700 dark:text-sky-400 font-inter text-sm font-medium h-screen w-64 border-r fixed left-0 top-0 border-sky-100 dark:border-sky-900 flex flex-col h-full py-6 gap-2 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-xl font-black text-sky-800 dark:text-sky-200 tracking-tight">SIGURU</h1>
+<p class="text-xs text-slate-500 font-normal">Academic Excellence</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-600 dark:text-slate-400 px-3 py-2 mx-2 flex items-center gap-3 hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="bg-sky-200/50 dark:bg-sky-900/40 text-sky-800 dark:text-sky-100 rounded-lg px-3 py-2 mx-2 flex items-center gap-3 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span>Classroom</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 px-3 py-2 mx-2 flex items-center gap-3 hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Students</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 px-3 py-2 mx-2 flex items-center gap-3 hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>Gradebook</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 px-3 py-2 mx-2 flex items-center gap-3 hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Attendance</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 px-3 py-2 mx-2 flex items-center gap-3 hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-sky-100 dark:border-sky-900 space-y-1">
+<a class="text-slate-600 dark:text-slate-400 px-3 py-2 mx-2 flex items-center gap-3 hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help Center</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 px-3 py-2 mx-2 flex items-center gap-3 hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar Anchor -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 flex justify-between items-center w-full px-6 py-3 border-b border-sky-100 dark:border-sky-900 shadow-sm shadow-sky-500/5">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search for files, students, or forms..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-slate-500">
+<button class="material-symbols-outlined hover:text-sky-700 transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined hover:text-sky-700 transition-colors" data-icon="settings">settings</button>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">Support</button>
+<div class="flex items-center gap-3 pl-4 border-l border-sky-100">
+<img alt="Teacher Profile Picture" class="w-8 h-8 rounded-full object-cover" data-alt="A professional portrait of a smiling female educator in her late 30s. She is wearing a soft blue blazer and stands against a blurred background of a modern, sunlit library with neatly arranged books. The lighting is soft and natural, emphasizing a professional yet approachable academic atmosphere. The overall image reflects a high-key, modern light-mode aesthetic with clean lines and soft textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD34g7p7qoVK3WDFc51MIgZiX2bMrbGGAvcailuIT9np-3ERiuhbslejcNJEYO3fedjLVyN9aq-WV8Hyy6FJ6r8pIfNkaq_lDvyB5OkpT3w_c9uzBFGY28bWorLJJSKBgQ0AarvvlE_fgwx-ncd_j4UCERgIguMKK68Up3LZFQJ92f-YIRXpkJ6Wsxlb6GtJk9pjRnZkuHfcy-Dvy0yJmyXTVnk0ZrvdXY3Bwl7hN6R7Mx887R5s-Z-klcVebT9RJYVt73KKAWmaymN"/>
+</div>
+</div>
+</header>
+<div class="p-8 max-w-[1440px] mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-label-caps text-slate-400 mb-6">
+<span class="hover:text-primary cursor-pointer">ACADEMIC</span>
+<span class="material-symbols-outlined text-[12px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary">LEAVE REQUEST</span>
+</nav>
+<header class="mb-10">
+<h2 class="font-headline-md text-headline-md text-on-background">Staff Leave Management</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">Submit your leave requests for administrative review. Ensure all supporting documentation is provided for medical or official duty leave.</p>
+</header>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Leave Request Form -->
+<div class="col-span-12 lg:col-span-7">
+<section class="bg-white rounded-xl shadow-sm border border-sky-100 overflow-hidden">
+<div class="px-6 py-4 border-b border-sky-50 bg-surface-container-low flex items-center justify-between">
+<h3 class="font-title-sm text-title-sm text-sky-800">New Leave Request</h3>
+<span class="material-symbols-outlined text-sky-600" data-icon="edit_note">edit_note</span>
+</div>
+<div class="p-8 space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">LEAVE TYPE</label>
+<select class="w-full bg-white border border-outline-variant rounded-lg px-4 py-3 text-body-sm focus:border-secondary-container focus:ring-3 focus:ring-secondary-container/20 transition-all outline-none appearance-none">
+<option value="sick">Sick Leave</option>
+<option value="personal">Personal Leave</option>
+<option value="duty">Official Duty</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">REQUESTED BY</label>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm text-slate-500 cursor-not-allowed" readonly="" type="text" value="Dr. Sarah Jenkins"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">START DATE</label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded-lg px-4 py-3 text-body-sm focus:border-secondary-container focus:ring-3 focus:ring-secondary-container/20 transition-all outline-none" type="date"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">END DATE</label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded-lg px-4 py-3 text-body-sm focus:border-secondary-container focus:ring-3 focus:ring-secondary-container/20 transition-all outline-none" type="date"/>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">REASON FOR LEAVE</label>
+<textarea class="w-full bg-white border border-outline-variant rounded-lg px-4 py-3 text-body-sm focus:border-secondary-container focus:ring-3 focus:ring-secondary-container/20 transition-all outline-none resize-none" placeholder="Please provide details regarding your leave request..." rows="4"></textarea>
+</div>
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">SUPPORTING DOCUMENTS (PDF/JPG)</label>
+<div class="border-2 border-dashed border-sky-100 rounded-xl p-8 flex flex-col items-center justify-center bg-sky-50/30 hover:bg-sky-50 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-sky-400 text-3xl mb-2 group-hover:scale-110 transition-transform" data-icon="cloud_upload">cloud_upload</span>
+<p class="font-body-sm text-body-sm text-slate-500 text-center">Click to upload or drag and drop your files here</p>
+<p class="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">MAX FILE SIZE: 5MB</p>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full bg-primary text-white font-label-caps py-4 rounded-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+                                    SUBMIT REQUEST
+                                </button>
+</div>
+</div>
+</section>
+</div>
+<!-- My Leave Status -->
+<div class="col-span-12 lg:col-span-5 space-y-6">
+<section class="bg-white rounded-xl shadow-sm border border-sky-100 overflow-hidden">
+<div class="px-6 py-4 border-b border-sky-50 bg-surface-container-low flex items-center justify-between">
+<h3 class="font-title-sm text-title-sm text-sky-800">My Leave Status</h3>
+<span class="material-symbols-outlined text-sky-600" data-icon="history">history</span>
+</div>
+<div class="divide-y divide-sky-50">
+<!-- Pending Request -->
+<div class="p-6 hover:bg-sky-50/30 transition-colors">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-body-md font-semibold text-on-surface">Sick Leave</h4>
+<p class="text-xs text-slate-500 font-medium">Oct 24 - Oct 26, 2023</p>
+</div>
+<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="pending">pending</span>
+                                        Pending
+                                    </span>
+</div>
+<p class="text-body-sm text-on-surface-variant line-clamp-1 mb-3 italic">"Medical checkup and laboratory tests as advised..."</p>
+<div class="flex items-center gap-4 text-[11px] text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="attach_file">attach_file</span> 1 File</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span> Submitted 2h ago</span>
+</div>
+</div>
+<!-- Approved Request -->
+<div class="p-6 hover:bg-sky-50/30 transition-colors">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-body-md font-semibold text-on-surface">Official Duty</h4>
+<p class="text-xs text-slate-500 font-medium">Oct 12, 2023</p>
+</div>
+<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                                        Approved
+                                    </span>
+</div>
+<p class="text-body-sm text-on-surface-variant line-clamp-1 mb-3 italic">"Teacher Professional Development Seminar at Central Hub..."</p>
+<div class="flex items-center gap-4 text-[11px] text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="attach_file">attach_file</span> 2 Files</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Oct 10, 2023</span>
+</div>
+</div>
+<!-- Rejected Request -->
+<div class="p-6 hover:bg-sky-50/30 transition-colors opacity-80">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-body-md font-semibold text-on-surface">Personal Leave</h4>
+<p class="text-xs text-slate-500 font-medium">Sep 15 - Sep 16, 2023</p>
+</div>
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="cancel">cancel</span>
+                                        Rejected
+                                    </span>
+</div>
+<p class="text-body-sm text-on-surface-variant line-clamp-1 mb-3 italic">"Family event in hometown..."</p>
+<div class="bg-error-container/20 p-2 rounded-lg mb-3">
+<p class="text-[11px] text-on-error-container leading-tight"><strong>Admin Note:</strong> Conflict with scheduled midterm examination supervision.</p>
+</div>
+<div class="flex items-center gap-4 text-[11px] text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Sep 08, 2023</span>
+</div>
+</div>
+</div>
+<button class="w-full py-4 bg-sky-50/50 text-primary font-label-caps text-xs hover:bg-sky-100 transition-colors border-t border-sky-50">VIEW ALL HISTORY</button>
+</section>
+<!-- Summary Card -->
+<div class="bg-gradient-to-br from-sky-600 to-sky-800 rounded-xl p-6 text-white shadow-lg shadow-sky-900/20 relative overflow-hidden">
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-white/10 text-9xl" data-icon="equalizer" style="font-variation-settings: 'FILL' 1;">equalizer</span>
+<h4 class="font-label-caps text-white/80 mb-4">LEAVE BALANCE 2023</h4>
+<div class="grid grid-cols-2 gap-4 relative z-10">
+<div>
+<p class="text-3xl font-black">12</p>
+<p class="text-[10px] opacity-70 uppercase font-bold">Days Remaining</p>
+</div>
+<div>
+<p class="text-3xl font-black">08</p>
+<p class="text-[10px] opacity-70 uppercase font-bold">Days Taken</p>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-white/20">
+<div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+<div class="bg-white h-full w-[40%] rounded-full"></div>
+</div>
+<p class="text-[10px] mt-2 opacity-80">Next reset on January 1st, 2024</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) - Suppressed on this detail screen per instructions -->
+</body></html>

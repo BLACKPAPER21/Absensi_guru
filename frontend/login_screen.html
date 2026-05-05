@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SIGURU - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#e0e3e5",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-error": "#ffffff",
+                        "secondary": "#006a61",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary": "#000000",
+                        "surface-container-high": "#dce9ff",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-tint": "#565e74",
+                        "primary-container": "#131b2e",
+                        "tertiary-container": "#191c1e",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-tertiary-fixed": "#191c1e",
+                        "background": "#f8f9ff",
+                        "inverse-surface": "#213145",
+                        "surface-bright": "#f8f9ff",
+                        "on-secondary-fixed-variant": "#005049",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "secondary-fixed": "#89f5e7",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "secondary-container": "#86f2e4",
+                        "on-tertiary-container": "#818486",
+                        "surface": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "primary": "#000000",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline-variant": "#c6c6cd",
+                        "on-primary-container": "#7c839b",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container": "#e5eeff",
+                        "surface-variant": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#006f66",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "on-secondary-fixed": "#00201d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "280px",
+                        "stack-sm": "4px",
+                        "stack-lg": "24px",
+                        "base": "8px",
+                        "margin-page": "40px",
+                        "container-max": "1440px",
+                        "stack-md": "12px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center p-margin-page">
+<div class="w-full max-w-[420px] bg-surface-container-lowest rounded-xl shadow-[0_4px_24px_rgba(11,28,48,0.04)] border border-surface-container flex flex-col p-margin-page gap-stack-lg relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary"></div>
+<div class="flex flex-col items-center text-center gap-stack-sm mb-stack-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container-low flex items-center justify-center mb-base border border-surface-variant overflow-hidden">
+<img alt="SIGURU Logo" class="w-full h-full object-cover" data-alt="A clean, minimalist abstract geometric logo design designed for a modern educational management platform named SIGURU. The logo symbol incorporates subtle visual cues of an open book and a shield, symbolizing both academic learning and institutional security. It is rendered in a sharp, professional teal color palette against a pristine white background. The overall aesthetic is highly corporate, trustworthy, and precise, resembling a high-end vector illustration suitable for a secure login screen. The lighting is completely flat, emphasizing the crisp edges and mathematical perfection of the intersecting shapes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe_Ax6rGAcs9AB1DxHu6HeF2R9a2coewZWDqfCbhZXtXD588jJaxVjnOY6uKOJZ3tAZKomMpnoSK9Q4HA9wiVwcOcjHdcwP4WVlVeRuA8r1mibC5Vx4r8qY3VJdtOyWpEMd-N_9jnORrIeOqj_5bs4vCNnZbs_s-jg5YRzA-6rgGejFDboNPXNP3RtfKgb_WEB00bo41iJqWUA-ycQOMU5VQNPZxWVvPlV1Omu0zq4Xf1XB7qCmyy_DIQbz7nUo1UPvzUhQoMrCGu-"/>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Welcome to SIGURU</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Academic Management System</p>
+</div>
+<form class="flex flex-col gap-stack-lg">
+<div class="flex flex-col gap-stack-md">
+<div class="flex flex-col gap-stack-sm relative">
+<label class="font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline" data-icon="mail">mail</span>
+<input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors" id="email" placeholder="admin@school.edu" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-stack-sm relative">
+<label class="font-label-md text-label-md text-on-surface" for="password">Password</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline" data-icon="lock">lock</span>
+<input class="w-full pl-10 pr-10 py-3 rounded-lg bg-surface border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 text-outline hover:text-on-surface transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary bg-surface" id="remember" type="checkbox"/>
+<label class="font-label-md text-label-md text-on-surface-variant cursor-pointer" for="remember">Remember Me</label>
+</div>
+<a class="font-label-md text-label-md text-secondary hover:text-on-secondary-container transition-colors" href="#">Forgot Password?</a>
+</div>
+<button class="w-full py-3 px-4 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-on-secondary-container transition-colors mt-base flex justify-center items-center gap-2" type="submit">
+                Sign In
+                <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<div class="mt-stack-md text-center">
+<p class="font-label-sm text-label-sm text-outline">
+                Need help accessing your account? <a class="text-secondary hover:underline" href="#">Contact Support</a>
+</p>
+</div>
+</div>
+</body></html>
