@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
+import * as faceapi from 'face-api.js';
 
 export default function DataGuru() {
   const [teachers, setTeachers] = useState([]);
@@ -9,12 +10,30 @@ export default function DataGuru() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
-  const [currentTeacher, setCurrentTeacher] = useState({ id: '', nip: '', name: '', email: '', dept: '', password: '' });
+  const [currentTeacher, setCurrentTeacher] = useState({ id: '', nip: '', name: '', email: '', dept: '', password: '', faceDescriptor: null });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Face Extractor state
+  const [faceImageBlob, setFaceImageBlob] = useState(null);
+  const [isModelsLoaded, setIsModelsLoaded] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchTeachers();
+    loadFaceModels();
   }, []);
+
+  const loadFaceModels = async () => {
+    try {
+      await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
+      await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+      await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+      setIsModelsLoaded(true);
+    } catch (err) {
+      console.error('Gagal memuat model Face-API:', err);
+    }
+  };
 
   const fetchTeachers = async () => {
     setIsLoading(true);
@@ -36,16 +55,57 @@ export default function DataGuru() {
   const handleOpenModal = (mode, teacher = null) => {
     setModalMode(mode);
     if (mode === 'edit' && teacher) {
-      setCurrentTeacher({ ...teacher, password: '' });
+      setCurrentTeacher({ ...teacher, password: '', faceDescriptor: null });
     } else {
-      setCurrentTeacher({ id: '', nip: '', name: '', email: '', dept: '', password: '' });
+      setCurrentTeacher({ id: '', nip: '', name: '', email: '', dept: '', password: '', faceDescriptor: null });
     }
+    setFaceImageBlob(null);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setCurrentTeacher({ id: '', nip: '', name: '', email: '', dept: '', password: '' });
+    setCurrentTeacher({ id: '', nip: '', name: '', email: '', dept: '', password: '', faceDescriptor: null });
+    setFaceImageBlob(null);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!isModelsLoaded) {
+      alert("Model AI belum selesai dimuat, harap tunggu sebentar.");
+      return;
+    }
+
+    setIsExtracting(true);
+    try {
+      // Proses foto menggunakan face-api
+      const img = await faceapi.bufferToImage(file);
+      const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+
+      if (detections.length === 0) {
+        alert("AI Peringatan: Tidak ada wajah yang terdeteksi di foto ini! Pastikan foto jelas dan terang.");
+        setFaceImageBlob(null);
+        setCurrentTeacher({ ...currentTeacher, faceDescriptor: null });
+      } else if (detections.length > 1) {
+        alert("AI Peringatan: Terdeteksi lebih dari satu wajah! Harap gunakan pas foto sendiri.");
+        setFaceImageBlob(null);
+        setCurrentTeacher({ ...currentTeacher, faceDescriptor: null });
+      } else {
+        // Berhasil mendeteksi tepat 1 wajah
+        const descriptorArray = Array.from(detections[0].descriptor);
+        setCurrentTeacher({ ...currentTeacher, faceDescriptor: JSON.stringify(descriptorArray) });
+        setFaceImageBlob(file); // Simpan untuk preview
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat mengekstrak wajah dari foto.");
+    } finally {
+      setIsExtracting(false);
+      // Reset input file
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const handleSave = async (e) => {
@@ -208,6 +268,44 @@ export default function DataGuru() {
                     {modalMode === 'edit' && <span className="text-outline text-[10px] font-normal italic">(Kosongkan jika tidak ingin mengubah)</span>}
                   </label>
                   <input required={modalMode === 'add'} type="password" value={currentTeacher.password} onChange={e => setCurrentTeacher({...currentTeacher, password: e.target.value})} className="px-3 py-2 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-secondary" placeholder="••••••••" />
+                </div>
+                <div className="flex flex-col gap-1 mt-2">
+                  <label className="font-label-sm text-on-surface">Data Biometrik Wajah (Pas Foto)</label>
+                  <div className="flex items-center gap-3">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      ref={fileInputRef}
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isExtracting || !isModelsLoaded}
+                      className="px-4 py-2 border border-secondary text-secondary rounded-lg font-label-md hover:bg-secondary-container transition-colors flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        {isExtracting ? 'hourglass_empty' : 'upload_file'}
+                      </span>
+                      {isExtracting ? 'Mengekstrak...' : (currentTeacher.faceDescriptor ? 'Ganti Foto' : 'Upload Pas Foto')}
+                    </button>
+
+                    {currentTeacher.faceDescriptor && !isExtracting && (
+                      <span className="text-secondary flex items-center gap-1 text-sm font-medium">
+                        <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                        Biometrik Tersimpan
+                      </span>
+                    )}
+                  </div>
+                  {faceImageBlob && (
+                    <div className="mt-2 w-24 h-32 rounded-lg overflow-hidden border border-outline-variant bg-surface-container">
+                      <img src={URL.createObjectURL(faceImageBlob)} alt="Face preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <p className="text-xs text-on-surface-variant mt-1">
+                    *{modalMode === 'edit' ? 'Upload foto baru jika ingin memperbarui data biometrik.' : 'Upload pas foto guru. Sistem otomatis memindai wajah pada foto.'}
+                  </p>
                 </div>
               </form>
             </div>

@@ -33,7 +33,7 @@ exports.getTeachers = async (req, res) => {
 // Create a new teacher
 exports.createTeacher = async (req, res) => {
   try {
-    const { nip, name, email, password, dept } = req.body;
+    const { nip, name, email, password, dept, faceDescriptor } = req.body;
 
     // Check if email or NIP exists
     const existingUser = await prisma.user.findFirst({
@@ -59,7 +59,8 @@ exports.createTeacher = async (req, res) => {
         email,
         password: hashedPassword,
         role: 'GURU',
-        dept
+        dept,
+        faceDescriptor
       },
       select: {
         id: true,
@@ -80,9 +81,12 @@ exports.createTeacher = async (req, res) => {
 exports.updateTeacher = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nip, name, email, dept, password } = req.body;
+    const { nip, name, email, dept, password, faceDescriptor } = req.body;
 
     const dataToUpdate = { nip, name, email, dept };
+    if (faceDescriptor) {
+      dataToUpdate.faceDescriptor = faceDescriptor;
+    }
 
     if (password) {
       const salt = await bcrypt.genSalt(10);

@@ -160,3 +160,16 @@ body {
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
+
+@keyframes scan {
+  0% { transform: translateY(-300px); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(300px); opacity: 0; }
+}
+
+@layer utilities {
+  .animate-scan {
+    animation: scan 2s linear infinite;
+  }
+}

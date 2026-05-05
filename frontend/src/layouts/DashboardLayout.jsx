@@ -5,6 +5,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
   const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotificationMenu, setShowNotificationMenu] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close menus when clicking outside (simple logic: just close the other when one opens)
   const toggleProfile = () => {
@@ -50,16 +51,32 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
 
   return (
     <div className="bg-background flex h-screen overflow-hidden font-body-md text-on-background">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        ></div>
+      )}
+
       {/* SideNavBar */}
-      <aside className="bg-slate-900 font-inter text-sm font-medium h-screen left-0 w-64 border-r border-slate-800 shadow-xl flex flex-col py-4 shrink-0 hidden md:flex">
-        <div className="px-6 mb-8 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
-            <span className="material-symbols-outlined text-white">school</span>
+      <aside className={`bg-slate-900 font-inter text-sm font-medium h-screen left-0 w-64 border-r border-slate-800 shadow-xl flex flex-col py-4 shrink-0 fixed md:static z-50 transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        <div className="px-6 mb-8 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+              <span className="material-symbols-outlined text-white">school</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-black text-white">SIGURU</h1>
+              <p className="text-slate-400 text-xs">Sistem Akademik</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-black text-white">SIGURU</h1>
-            <p className="text-slate-400 text-xs">Sistem Akademik</p>
-          </div>
+          <button 
+            className="md:hidden text-slate-400 hover:text-white"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
         <nav className="flex-1 flex flex-col gap-1 px-2">
           {navItems.map((item) => {
@@ -68,6 +85,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
               <Link 
                 key={item.name} 
                 to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`rounded-md mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-200 ${isActive ? 'bg-secondary text-white translate-x-1' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
               >
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "" }}>
@@ -89,8 +107,14 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* TopAppBar */}
-        <header className="bg-white/80 backdrop-blur-md font-inter text-sm font-medium z-40 border-b border-slate-200 shadow-sm flex justify-between items-center w-full px-6 h-16 shrink-0">
+        <header className="bg-white/80 backdrop-blur-md font-inter text-sm font-medium z-30 border-b border-slate-200 shadow-sm flex justify-between items-center w-full px-4 md:px-6 h-16 shrink-0">
           <div className="flex items-center gap-4">
+            <button 
+              className="md:hidden text-slate-600 hover:bg-slate-50 p-2 rounded-full transition-colors flex items-center justify-center"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
             <span className="text-xl font-bold tracking-tight text-slate-900 md:hidden">SIGURU</span>
             <div className="hidden md:flex items-center bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
               <span className="material-symbols-outlined text-slate-400 mr-2 text-sm">search</span>
