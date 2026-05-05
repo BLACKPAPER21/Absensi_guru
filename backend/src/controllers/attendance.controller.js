@@ -1,11 +1,17 @@
 const { PrismaClient } = require('@prisma/client');
 const { Pool } = require('pg');
 const { PrismaPg } = require('@prisma/adapter-pg');
+const { createClient } = require('@supabase/supabase-js');
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
+
+// Initialize Supabase Storage Client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 // Helper to get today's date at midnight for querying
 const getTodayDate = () => {
@@ -19,12 +25,32 @@ exports.checkIn = async (req, res) => {
     const userId = req.user.id;
     const { lat, lng } = req.body;
     
-    // Multer places the file in req.file
+    // Multer places the file in req.file.buffer
     if (!req.file) {
       return res.status(400).json({ message: 'Photo is required for check-in' });
     }
 
-    const photoUrl = `/uploads/attendance/${req.file.filename}`;
+    let photoUrl = '';
+    if (supabase) {
+      const fileName = `checkin/${userId}-${Date.now()}.jpg`;
+      const { data, error } = await supabase.storage
+        .from('photos')
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: false
+        });
+      
+      if (error) {
+        console.error('Supabase upload error:', error);
+        return res.status(500).json({ message: 'Failed to upload photo to storage' });
+      }
+      
+      const { data: publicData } = supabase.storage.from('photos').getPublicUrl(fileName);
+      photoUrl = publicData.publicUrl;
+    } else {
+      console.warn("Supabase credentials missing, photo not uploaded.");
+      photoUrl = "https://via.placeholder.com/150"; // Fallback if no credentials
+    }
     const today = getTodayDate();
     const now = new Date();
 
@@ -76,7 +102,26 @@ exports.checkOut = async (req, res) => {
       return res.status(400).json({ message: 'Photo is required for check-out' });
     }
 
-    const photoUrl = `/uploads/attendance/${req.file.filename}`;
+    let photoUrl = '';
+    if (supabase) {
+      const fileName = `checkout/${userId}-${Date.now()}.jpg`;
+      const { data, error } = await supabase.storage
+        .from('photos')
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: false
+        });
+      
+      if (error) {
+        console.error('Supabase upload error:', error);
+        return res.status(500).json({ message: 'Failed to upload photo to storage' });
+      }
+      
+      const { data: publicData } = supabase.storage.from('photos').getPublicUrl(fileName);
+      photoUrl = publicData.publicUrl;
+    } else {
+      photoUrl = "https://via.placeholder.com/150";
+    }
     const today = getTodayDate();
     const now = new Date();
 
