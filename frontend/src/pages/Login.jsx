@@ -66,10 +66,10 @@ export default function Login() {
               <label className="font-label-md text-label-md text-on-surface" htmlFor="email">Alamat Email</label>
               <div className="relative flex items-center">
                 <span className="material-symbols-outlined absolute left-3 text-outline">mail</span>
-                <input 
-                  className="w-full pl-10 pr-4 py-3 rounded-lg bg-surface border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors" 
-                  id="email" 
-                  placeholder="admin@siguru.com" 
+                <input
+                  className="w-full pl-10 pr-4 py-3 rounded-lg bg-surface border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                  id="email"
+                  placeholder="admin@siguru.com"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -81,17 +81,17 @@ export default function Login() {
               <label className="font-label-md text-label-md text-on-surface" htmlFor="password">Kata Sandi</label>
               <div className="relative flex items-center">
                 <span className="material-symbols-outlined absolute left-3 text-outline">lock</span>
-                <input 
-                  className="w-full pl-10 pr-10 py-3 rounded-lg bg-surface border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors" 
-                  id="password" 
-                  placeholder="••••••••" 
+                <input
+                  className="w-full pl-10 pr-10 py-3 rounded-lg bg-surface border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                  id="password"
+                  placeholder="••••••••"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <button 
-                  className="absolute right-3 text-outline hover:text-on-surface transition-colors flex items-center" 
+                <button
+                  className="absolute right-3 text-outline hover:text-on-surface transition-colors flex items-center"
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -114,8 +114,8 @@ export default function Login() {
             </div>
           )}
 
-          <button 
-            className="w-full py-3 px-4 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-on-secondary-container transition-colors mt-base flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed" 
+          <button
+            className="w-full py-3 px-4 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-on-secondary-container transition-colors mt-base flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             type="submit"
             disabled={isLoading}
           >

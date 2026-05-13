@@ -36,7 +36,7 @@ exports.checkIn = async (req, res) => {
   try {
     const userId = req.user.id;
     const { lat, lng } = req.body;
-    
+
     // Multer places the file in req.file.buffer
     if (!req.file) {
       return res.status(400).json({ message: 'Photo is required for check-in' });
@@ -51,12 +51,12 @@ exports.checkIn = async (req, res) => {
           contentType: req.file.mimetype,
           upsert: false
         });
-      
+
       if (error) {
         console.error('Supabase upload error:', error);
         return res.status(500).json({ message: 'Failed to upload photo to storage' });
       }
-      
+
       const { data: publicData } = supabase.storage.from('photos').getPublicUrl(fileName);
       photoUrl = publicData.publicUrl;
     } else {
@@ -80,7 +80,7 @@ exports.checkIn = async (req, res) => {
 
     // Get attendance config from database
     let config = await prisma.attendanceConfig.findFirst();
-    
+
     // If no config exists, create default one
     if (!config) {
       config = await prisma.attendanceConfig.create({
@@ -122,7 +122,7 @@ exports.checkIn = async (req, res) => {
 exports.checkOut = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     if (!req.file) {
       return res.status(400).json({ message: 'Photo is required for check-out' });
     }
@@ -136,12 +136,12 @@ exports.checkOut = async (req, res) => {
           contentType: req.file.mimetype,
           upsert: false
         });
-      
+
       if (error) {
         console.error('Supabase upload error:', error);
         return res.status(500).json({ message: 'Failed to upload photo to storage' });
       }
-      
+
       const { data: publicData } = supabase.storage.from('photos').getPublicUrl(fileName);
       photoUrl = publicData.publicUrl;
     } else {
@@ -188,7 +188,7 @@ exports.checkOut = async (req, res) => {
 exports.getHistory = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     const history = await prisma.attendance.findMany({
       where: { userId },
       orderBy: { date: 'desc' },
@@ -205,7 +205,7 @@ exports.getHistory = async (req, res) => {
 exports.getTodayAdmin = async (req, res) => {
   try {
     const today = getTodayDate();
-    
+
     const records = await prisma.attendance.findMany({
       where: { date: today },
       orderBy: { checkIn: 'desc' },
@@ -231,10 +231,10 @@ exports.getMonthlyStats = async (req, res) => {
   try {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    
+
     // Get all attendance for this month
     const records = await prisma.attendance.findMany({
-      where: { 
+      where: {
         date: {
           gte: firstDayOfMonth
         }
@@ -270,7 +270,7 @@ exports.getMonthlyStats = async (req, res) => {
 exports.getConfig = async (req, res) => {
   try {
     let config = await prisma.attendanceConfig.findFirst();
-    
+
     // If no config exists, create default one
     if (!config) {
       config = await prisma.attendanceConfig.create({
@@ -311,7 +311,7 @@ exports.updateConfig = async (req, res) => {
     }
 
     let config = await prisma.attendanceConfig.findFirst();
-    
+
     if (!config) {
       // Create if doesn't exist
       config = await prisma.attendanceConfig.create({
