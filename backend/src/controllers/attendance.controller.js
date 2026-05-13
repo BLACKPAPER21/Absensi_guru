@@ -20,6 +20,18 @@ const getTodayDate = () => {
   return today;
 };
 
+// Helper to convert HH:mm string to seconds for comparison
+const timeStringToMinutes = (timeStr) => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
+// Helper to get current time in minutes since midnight
+const getCurrentMinutes = () => {
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
+};
+
 exports.checkIn = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -66,10 +78,23 @@ exports.checkIn = async (req, res) => {
       return res.status(400).json({ message: 'You have already checked in today' });
     }
 
-    // Simple status logic: Late if after 07:30 AM
-    const lateThreshold = new Date();
-    lateThreshold.setHours(7, 30, 0, 0);
-    const status = now > lateThreshold ? 'TERLAMBAT' : 'HADIR';
+    // Get attendance config from database
+    let config = await prisma.attendanceConfig.findFirst();
+    
+    // If no config exists, create default one
+    if (!config) {
+      config = await prisma.attendanceConfig.create({
+        data: {
+          lateThresholdTime: '07:30',
+          updatedBy: 'system'
+        }
+      });
+    }
+
+    // Compare current time with late threshold
+    const currentMinutes = getCurrentMinutes();
+    const thresholdMinutes = timeStringToMinutes(config.lateThresholdTime);
+    const status = currentMinutes > thresholdMinutes ? 'TERLAMBAT' : 'HADIR';
 
     const attendance = await prisma.attendance.create({
       data: {
@@ -239,5 +264,84 @@ exports.getMonthlyStats = async (req, res) => {
   } catch (error) {
     console.error('Get stats error:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getConfig = async (req, res) => {
+  try {
+    let config = await prisma.attendanceConfig.findFirst();
+    
+    // If no config exists, create default one
+    if (!config) {
+      config = await prisma.attendanceConfig.create({
+        data: {
+          lateThresholdTime: '07:30',
+          updatedBy: 'system'
+        }
+      });
+    }
+
+    res.status(200).json({
+      config: {
+        id: config.id,
+        lateThresholdTime: config.lateThresholdTime,
+        updatedAt: config.updatedAt
+      }
+    });
+  } catch (error) {
+    console.error('Get config error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
+exports.updateConfig = async (req, res) => {
+  try {
+    const { lateThresholdTime } = req.body;
+    const adminId = req.user.id;
+
+    // Validate time format HH:mm
+    if (!lateThresholdTime || !/^\d{2}:\d{2}$/.test(lateThresholdTime)) {
+      return res.status(400).json({ message: 'Invalid time format. Use HH:mm (e.g., 07:30)' });
+    }
+
+    // Validate hours and minutes are valid
+    const [hours, minutes] = lateThresholdTime.split(':').map(Number);
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      return res.status(400).json({ message: 'Invalid time values. Hours: 0-23, Minutes: 0-59' });
+    }
+
+    let config = await prisma.attendanceConfig.findFirst();
+    
+    if (!config) {
+      // Create if doesn't exist
+      config = await prisma.attendanceConfig.create({
+        data: {
+          lateThresholdTime,
+          updatedBy: adminId
+        }
+      });
+    } else {
+      // Update existing
+      config = await prisma.attendanceConfig.update({
+        where: { id: config.id },
+        data: {
+          lateThresholdTime,
+          updatedBy: adminId,
+          updatedAt: new Date()
+        }
+      });
+    }
+
+    res.status(200).json({
+      message: 'Attendance config updated successfully',
+      config: {
+        id: config.id,
+        lateThresholdTime: config.lateThresholdTime,
+        updatedAt: config.updatedAt
+      }
+    });
+  } catch (error) {
+    console.error('Update config error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };

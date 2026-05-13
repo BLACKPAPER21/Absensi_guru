@@ -46,6 +46,13 @@ model Attendance {
   @@unique([userId, date])
 }
 
+model AttendanceConfig {
+  id                    String   @id @default(uuid())
+  lateThresholdTime     String   @default("07:30") // Format: HH:mm (e.g., "07:30")
+  updatedBy             String
+  updatedAt             DateTime @default(now()) @updatedAt
+}
+
 enum AttendanceStatus {
   HADIR
   TERLAMBAT

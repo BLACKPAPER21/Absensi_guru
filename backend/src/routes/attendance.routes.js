@@ -31,5 +31,7 @@ router.get('/history', attendanceController.getHistory);
 // Admin only routes
 router.get('/today', requireRole(['ADMIN', 'KEPSEK']), attendanceController.getTodayAdmin);
 router.get('/stats', requireRole(['ADMIN', 'KEPSEK']), attendanceController.getMonthlyStats);
+router.get('/config', requireRole(['ADMIN', 'KEPSEK']), attendanceController.getConfig);
+router.put('/config', requireRole(['ADMIN']), attendanceController.updateConfig);
 
 module.exports = router;
