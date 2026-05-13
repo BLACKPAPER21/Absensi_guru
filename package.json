@@ -5,7 +5,9 @@
   "main": "api/index.js",
   "type": "commonjs",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "npm run generate:prisma && npm run build:frontend",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "generate:prisma": "cd backend && npx prisma generate",
     "postinstall": "cd backend && npm install"
   },
   "dependencies": {

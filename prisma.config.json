@@ -1,0 +1,8 @@
+{
+  "schema": "backend/prisma/schema.prisma",
+  "datasource": {
+    "url": {
+      "fromEnvVar": "DATABASE_URL"
+    }
+  }
+}
