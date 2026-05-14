@@ -14,6 +14,9 @@ export default function DashboardGuru() {
   const [stats, setStats] = useState({ hadir: 0, terlambat: 0, izin: 0 });
   const [recentActivity, setRecentActivity] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [todaySchedule, setTodaySchedule] = useState(null);
+  const [scheduleStatus, setScheduleStatus] = useState('none');
+  const [scheduleDayName, setScheduleDayName] = useState('');
 
   useEffect(() => {
     // Live clock
@@ -40,6 +43,11 @@ export default function DashboardGuru() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const leaveData = await leaveRes.json();
+
+      const scheduleRes = await fetch(`${API_BASE}/api/schedules/today`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const scheduleData = await scheduleRes.json();
 
       let hadirCount = 0;
       let terlambatCount = 0;
@@ -72,6 +80,12 @@ export default function DashboardGuru() {
 
       if (leaveRes.ok && leaveData.requests) {
         izinCount = leaveData.requests.filter(r => r.status === 'APPROVED').length;
+      }
+
+      if (scheduleRes.ok) {
+        setTodaySchedule(scheduleData.schedule || null);
+        setScheduleStatus(scheduleData.status || 'none');
+        setScheduleDayName(scheduleData.dayName || '');
       }
 
       setStats({ hadir: hadirCount, terlambat: terlambatCount, izin: izinCount });
@@ -214,24 +228,46 @@ export default function DashboardGuru() {
             <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Kelas Berikutnya</h3>
             <button className="text-secondary hover:text-on-secondary-container transition-colors"><span className="material-symbols-outlined">more_horiz</span></button>
           </div>
-          <div className="flex-1 flex flex-col justify-center">
-            <h4 className="font-headline-md text-headline-md text-on-background">Matematika 101</h4>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-1 flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">meeting_room</span> Ruang 304 B
-            </p>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-1 flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">schedule</span> 09:00 - 10:30 WIB
-            </p>
-          </div>
-          <div className="mt-4 pt-4 border-t border-surface-variant">
-            <div className="flex items-center justify-between">
-              <span className="font-label-sm text-label-sm text-on-surface-variant">Siswa Diharapkan</span>
-              <span className="font-label-sm text-label-sm text-on-background font-bold">28/30</span>
+          {todaySchedule ? (
+            <>
+              <div className="flex-1 flex flex-col justify-center">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${scheduleStatus === 'ongoing' ? 'bg-[#dcfce7] text-[#166534]' : scheduleStatus === 'upcoming' ? 'bg-[#dbeafe] text-[#1d4ed8]' : 'bg-[#fef3c7] text-[#b45309]'}`}>
+                    {scheduleStatus === 'ongoing' ? 'Sedang Berlangsung' : scheduleStatus === 'upcoming' ? 'Jadwal Berikutnya' : 'Jadwal Hari Ini'}
+                  </span>
+                  <span className="text-xs text-on-surface-variant">{scheduleDayName}</span>
+                </div>
+                <h4 className="font-headline-md text-headline-md text-on-background">{todaySchedule.subject}</h4>
+                <p className="font-body-md text-body-md text-on-surface-variant mt-1 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm">meeting_room</span> {todaySchedule.room}
+                </p>
+                <p className="font-body-md text-body-md text-on-surface-variant mt-1 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm">schedule</span> {todaySchedule.startTime} - {todaySchedule.endTime} WIB
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-surface-variant">
+                <div className="flex items-center justify-between">
+                  <span className="font-label-sm text-label-sm text-on-surface-variant">Siswa Diharapkan</span>
+                  <span className="font-label-sm text-label-sm text-on-background font-bold">{todaySchedule.expectedStudents || 0}</span>
+                </div>
+                <div className="w-full bg-surface-container h-2 rounded-full mt-2 overflow-hidden">
+                  <div className="bg-secondary h-full rounded-full" style={{ width: `${Math.min(todaySchedule.expectedStudents || 0, 30) / 30 * 100}%` }}></div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col justify-center text-center py-6">
+              <span className="material-symbols-outlined text-4xl text-on-surface-variant mb-2">event_busy</span>
+              <h4 className="font-headline-md text-headline-md text-on-background">
+                {scheduleStatus === 'done' ? 'Semua jadwal hari ini selesai' : 'Belum ada jadwal hari ini'}
+              </h4>
+              <p className="font-body-md text-body-md text-on-surface-variant mt-1">
+                {scheduleStatus === 'done'
+                  ? 'Admin sudah mengatur jadwal, tetapi tidak ada kelas yang tersisa untuk saat ini.'
+                  : (scheduleDayName ? `Hari ${scheduleDayName} belum diatur oleh admin.` : 'Admin belum mengatur jadwal untuk Anda.')}
+              </p>
             </div>
-            <div className="w-full bg-surface-container h-2 rounded-full mt-2 overflow-hidden">
-              <div className="bg-secondary h-full rounded-full" style={{ width: '90%' }}></div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Summary Cards */}

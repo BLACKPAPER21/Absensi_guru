@@ -20,6 +20,7 @@ model User {
 
   attendances Attendance[]
   leaves      LeaveRequest[]
+  schedules   ClassSchedule[]
 }
 
 enum Role {
@@ -74,6 +75,23 @@ model LeaveRequest {
   adminNote   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model ClassSchedule {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  dayOfWeek        Int      // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  subject          String
+  room             String
+  startTime        String   // Format HH:mm
+  endTime          String   // Format HH:mm
+  expectedStudents Int      @default(0)
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId, dayOfWeek, active])
 }
 
 enum LeaveType {

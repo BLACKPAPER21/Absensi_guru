@@ -17,7 +17,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
     setShowNotificationMenu(!showNotificationMenu);
     if (!showNotificationMenu) setShowProfileMenu(false);
   };
-  
+
   const storedUser = localStorage.getItem('user');
   let currentRole = userRole;
   if (storedUser) {
@@ -44,6 +44,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
     navItems = [
       { name: 'Dashboard', path: '/admin', icon: 'dashboard' },
       { name: 'Data Guru', path: '/admin/guru', icon: 'manage_accounts' },
+      { name: 'Jadwal Pelajaran', path: '/admin/jadwal', icon: 'event_note' },
       { name: 'Manajemen Izin', path: '/admin/izin', icon: 'edit_document' },
       { name: 'Laporan', path: '/admin/laporan', icon: 'analytics' },
       { name: 'Pengaturan', path: '/admin/setting', icon: 'settings' },
@@ -54,7 +55,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
     <div className="bg-background flex h-screen overflow-hidden font-body-md text-on-background">
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
           onClick={() => setIsMobileMenuOpen(false)}
         ></div>
@@ -72,7 +73,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
               <p className="text-slate-400 text-xs">Sistem Akademik</p>
             </div>
           </div>
-          <button 
+          <button
             className="md:hidden text-slate-400 hover:text-white"
             onClick={() => setIsMobileMenuOpen(false)}
           >
@@ -83,8 +84,8 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <Link 
-                key={item.name} 
+              <Link
+                key={item.name}
                 to={item.path}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`rounded-md mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-200 ${isActive ? 'bg-secondary text-white translate-x-1' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
@@ -110,7 +111,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
         {/* TopAppBar */}
         <header className="bg-white/80 backdrop-blur-md font-inter text-sm font-medium z-30 border-b border-slate-200 shadow-sm flex justify-between items-center w-full px-4 md:px-6 h-16 shrink-0">
           <div className="flex items-center gap-4">
-            <button 
+            <button
               className="md:hidden text-slate-600 hover:bg-slate-50 p-2 rounded-full transition-colors flex items-center justify-center"
               onClick={() => setIsMobileMenuOpen(true)}
             >
@@ -124,7 +125,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
           </div>
           <div className="flex items-center gap-4">
             <div className="relative">
-              <button 
+              <button
                 onClick={toggleNotification}
                 className={`text-slate-600 transition-colors p-2 rounded-full relative ${showNotificationMenu ? 'bg-slate-100' : 'hover:bg-slate-50'}`}
               >
@@ -160,13 +161,13 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
             </div>
 
             <div className="relative">
-              <button 
+              <button
                 onClick={toggleProfile}
                 className={`w-8 h-8 rounded-full border border-slate-200 overflow-hidden bg-surface-container flex justify-center items-center ml-2 transition-all cursor-pointer ${showProfileMenu ? 'ring-2 ring-secondary' : 'hover:ring-2 hover:ring-secondary/30'}`}
               >
                 <span className="material-symbols-outlined text-secondary text-sm">person</span>
               </button>
-              
+
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
                   <div className="px-4 py-2 border-b border-slate-100">

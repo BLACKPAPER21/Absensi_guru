@@ -9,22 +9,24 @@ import DashboardKepsek from './pages/DashboardKepsek';
 import DataGuru from './pages/DataGuru';
 import Laporan from './pages/Laporan';
 import SettingAdmin from './pages/SettingAdmin';
+import ScheduleAdmin from './pages/ScheduleAdmin';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        
+
         {/* Guru Routes */}
         <Route path="/guru" element={<DashboardGuru />} />
         <Route path="/guru/riwayat" element={<RiwayatAbsensi />} />
         <Route path="/guru/izin" element={<FormIzin />} />
-        
+
         {/* Admin Routes */}
         <Route path="/admin" element={<DashboardAdmin />} />
         <Route path="/admin/izin" element={<LeaveManagementAdmin />} />
         <Route path="/admin/guru" element={<DataGuru />} />
+        <Route path="/admin/jadwal" element={<ScheduleAdmin />} />
         <Route path="/admin/laporan" element={<Laporan />} />
         <Route path="/admin/setting" element={<SettingAdmin />} />
 
