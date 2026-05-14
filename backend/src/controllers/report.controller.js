@@ -251,3 +251,53 @@ exports.generateMonthlyReportPDF = async (req, res) => {
     }
   }
 };
+
+exports.getRecentReports = async (req, res) => {
+  try {
+    // Get all attendance records, extract unique months
+    const attendances = await prisma.attendance.findMany({
+      select: { date: true }
+    });
+
+    // Extract unique months from attendance data
+    const monthsSet = new Set();
+    attendances.forEach(a => {
+      if (a.date) {
+        const year = a.date.getFullYear();
+        const month = String(a.date.getMonth() + 1).padStart(2, '0');
+        monthsSet.add(`${year}-${month}`);
+      }
+    });
+
+    // Convert to sorted array (most recent first) and limit to 12 months
+    const months = Array.from(monthsSet).sort().reverse().slice(0, 12);
+
+    // Also add current month if not already in list
+    const currentMonth = new Date();
+    const currentMonthStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+    if (!months.includes(currentMonthStr)) {
+      months.unshift(currentMonthStr);
+    }
+
+    // Format for display (with month names)
+    const reportsWithNames = months.map(monthStr => {
+      const [year, monthNum] = monthStr.split('-');
+      const date = new Date(year, parseInt(monthNum) - 1);
+      const monthName = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+      
+      return {
+        month: monthStr,
+        monthName: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+        canDownloadPdf: true,
+        canDownloadExcel: true
+      };
+    });
+
+    res.status(200).json({
+      reports: reportsWithNames
+    });
+  } catch (error) {
+    console.error('Error getting recent reports:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
