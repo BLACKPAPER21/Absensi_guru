@@ -6,6 +6,10 @@ export default function LeaveManagementAdmin() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [msg, setMsg] = useState({ text: '', type: '' });
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchRequests();
@@ -28,15 +32,23 @@ export default function LeaveManagementAdmin() {
     }
   };
 
-  const handleUpdateStatus = async (id, status) => {
+  const openRejectModal = (request) => {
+    setSelectedRequest(request);
+    setRejectReason('');
+    setRejectModalOpen(true);
+  };
+
+  const closeRejectModal = () => {
+    if (isSubmitting) return;
+    setRejectModalOpen(false);
+    setSelectedRequest(null);
+    setRejectReason('');
+  };
+
+  const handleUpdateStatus = async (id, status, adminNote = '') => {
     try {
+      setIsSubmitting(true);
       const token = localStorage.getItem('token');
-      // Simple prompt for admin note if rejecting
-      let adminNote = '';
-      if (status === 'REJECTED') {
-        adminNote = prompt('Please provide a reason for rejection (optional):');
-        if (adminNote === null) return; // Cancelled
-      }
 
       const res = await fetch(`${API_BASE}/api/leave/${id}/status`, {
         method: 'PUT',
@@ -49,15 +61,24 @@ export default function LeaveManagementAdmin() {
 
       if (res.ok) {
         setMsg({ text: `Request successfully ${status.toLowerCase()}`, type: 'success' });
+        closeRejectModal();
         fetchRequests(); // Refresh data
         setTimeout(() => setMsg({ text: '', type: '' }), 3000);
       } else {
-        const err = await res.json();
-        setMsg({ text: err.message, type: 'error' });
+        const err = await res.json().catch(() => ({ message: 'Unknown error' }));
+        setMsg({ text: err.message || 'Unknown error', type: 'error' });
       }
     } catch (error) {
       setMsg({ text: 'Network error', type: 'error' });
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleRejectSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedRequest) return;
+    await handleUpdateStatus(selectedRequest.id, 'REJECTED', rejectReason.trim());
   };
 
   // Stats
@@ -189,7 +210,7 @@ export default function LeaveManagementAdmin() {
                             Setujui
                           </button>
                           <button 
-                            onClick={() => handleUpdateStatus(req.id, 'REJECTED')}
+                            onClick={() => openRejectModal(req)}
                             className="px-4 py-1.5 bg-error-container text-on-error-container font-label-sm text-xs font-bold rounded-lg hover:bg-error/20 transition-all active:scale-95"
                           >
                             Tolak
@@ -206,6 +227,70 @@ export default function LeaveManagementAdmin() {
           )}
         </div>
       </div>
+
+      {rejectModalOpen && selectedRequest && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm px-4"
+          onClick={closeRejectModal}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl border border-surface-variant bg-surface-container-lowest shadow-[0_24px_80px_rgba(15,23,42,0.35)] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3 p-6 border-b border-surface-variant bg-gradient-to-r from-error-container/70 to-surface-container-lowest">
+              <div className="w-11 h-11 rounded-xl bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined">cancel</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs uppercase tracking-[0.18em] text-on-surface-variant font-semibold">Tolak Permohonan</p>
+                <h3 className="text-xl font-headline-md text-on-background mt-1">{selectedRequest.user?.name}</h3>
+                <p className="text-sm text-on-surface-variant mt-1">
+                  {selectedRequest.type} • {new Date(selectedRequest.startDate).toLocaleDateString('id-ID')} - {new Date(selectedRequest.endDate).toLocaleDateString('id-ID')}
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleRejectSubmit} className="p-6 space-y-5">
+              <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-900">
+                Alasan penolakan bersifat opsional, tetapi akan tersimpan sebagai catatan admin untuk guru.
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="rejectReason" className="font-label-md text-on-surface">Alasan Penolakan</label>
+                <textarea
+                  id="rejectReason"
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Contoh: Dokumen pendukung belum lengkap / jadwal bertabrakan / alasan tidak sesuai ketentuan"
+                  rows={5}
+                  className="w-full rounded-xl border border-outline-variant bg-surface-container px-4 py-3 text-on-background placeholder:text-on-surface-variant focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/15 transition-colors resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={closeRejectModal}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface hover:bg-surface-variant transition-colors disabled:opacity-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-5 py-2 rounded-lg bg-error text-white hover:bg-error/90 transition-colors flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {isSubmitting ? 'hourglass_empty' : 'send'}
+                  </span>
+                  {isSubmitting ? 'Menyimpan...' : 'Tolak Permohonan'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }
