@@ -46,6 +46,7 @@ export default function DashboardLayout({ children, userRole = 'guru' }) {
       { name: 'Data Guru', path: '/admin/guru', icon: 'manage_accounts' },
       { name: 'Manajemen Izin', path: '/admin/izin', icon: 'edit_document' },
       { name: 'Laporan', path: '/admin/laporan', icon: 'analytics' },
+      { name: 'Pengaturan', path: '/admin/setting', icon: 'settings' },
     ];
   }
 

@@ -8,6 +8,7 @@ import LeaveManagementAdmin from './pages/LeaveManagementAdmin';
 import DashboardKepsek from './pages/DashboardKepsek';
 import DataGuru from './pages/DataGuru';
 import Laporan from './pages/Laporan';
+import SettingAdmin from './pages/SettingAdmin';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/admin/izin" element={<LeaveManagementAdmin />} />
         <Route path="/admin/guru" element={<DataGuru />} />
         <Route path="/admin/laporan" element={<Laporan />} />
+        <Route path="/admin/setting" element={<SettingAdmin />} />
 
         {/* Kepsek Routes */}
         <Route path="/kepsek" element={<DashboardKepsek />} />
