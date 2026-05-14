@@ -166,6 +166,23 @@ exports.checkOut = async (req, res) => {
       return res.status(400).json({ message: 'You have already checked out today' });
     }
 
+    // Get attendance config to check if early checkout
+    let config = await prisma.attendanceConfig.findFirst();
+    if (!config) {
+      config = await prisma.attendanceConfig.create({
+        data: {
+          lateThresholdTime: '07:30',
+          checkOutThresholdTime: '16:00',
+          updatedBy: 'system'
+        }
+      });
+    }
+
+    // Check if checkout is early (before threshold)
+    const currentMinutes = getCurrentMinutes();
+    const thresholdMinutes = timeStringToMinutes(config.checkOutThresholdTime);
+    const isEarlyCheckOut = currentMinutes < thresholdMinutes;
+
     const updatedAttendance = await prisma.attendance.update({
       where: { id: existingRecord.id },
       data: {
@@ -176,7 +193,12 @@ exports.checkOut = async (req, res) => {
 
     res.status(200).json({
       message: 'Check-out successful',
-      attendance: updatedAttendance
+      attendance: updatedAttendance,
+      info: {
+        isEarlyCheckOut,
+        checkOutThreshold: config.checkOutThresholdTime,
+        warning: isEarlyCheckOut ? `Anda pulang lebih awal dari jam ${config.checkOutThresholdTime}` : null
+      }
     });
 
   } catch (error) {
@@ -276,6 +298,7 @@ exports.getConfig = async (req, res) => {
       config = await prisma.attendanceConfig.create({
         data: {
           lateThresholdTime: '07:30',
+          checkOutThresholdTime: '16:00',
           updatedBy: 'system'
         }
       });
@@ -285,6 +308,7 @@ exports.getConfig = async (req, res) => {
       config: {
         id: config.id,
         lateThresholdTime: config.lateThresholdTime,
+        checkOutThresholdTime: config.checkOutThresholdTime,
         updatedAt: config.updatedAt
       }
     });
@@ -296,27 +320,45 @@ exports.getConfig = async (req, res) => {
 
 exports.updateConfig = async (req, res) => {
   try {
-    const { lateThresholdTime } = req.body;
+    const { lateThresholdTime, checkOutThresholdTime } = req.body;
     const adminId = req.user.id;
 
     // Validate time format HH:mm
-    if (!lateThresholdTime || !/^\d{2}:\d{2}$/.test(lateThresholdTime)) {
-      return res.status(400).json({ message: 'Invalid time format. Use HH:mm (e.g., 07:30)' });
+    if (lateThresholdTime && !/^\d{2}:\d{2}$/.test(lateThresholdTime)) {
+      return res.status(400).json({ message: 'Invalid late threshold time format. Use HH:mm (e.g., 07:30)' });
+    }
+
+    if (checkOutThresholdTime && !/^\d{2}:\d{2}$/.test(checkOutThresholdTime)) {
+      return res.status(400).json({ message: 'Invalid check-out threshold time format. Use HH:mm (e.g., 16:00)' });
     }
 
     // Validate hours and minutes are valid
-    const [hours, minutes] = lateThresholdTime.split(':').map(Number);
-    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-      return res.status(400).json({ message: 'Invalid time values. Hours: 0-23, Minutes: 0-59' });
+    if (lateThresholdTime) {
+      const [hours, minutes] = lateThresholdTime.split(':').map(Number);
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        return res.status(400).json({ message: 'Invalid late threshold time. Hours: 0-23, Minutes: 0-59' });
+      }
+    }
+
+    if (checkOutThresholdTime) {
+      const [hours, minutes] = checkOutThresholdTime.split(':').map(Number);
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        return res.status(400).json({ message: 'Invalid check-out threshold time. Hours: 0-23, Minutes: 0-59' });
+      }
     }
 
     let config = await prisma.attendanceConfig.findFirst();
+    
+    const updateData = { updatedBy: adminId, updatedAt: new Date() };
+    if (lateThresholdTime) updateData.lateThresholdTime = lateThresholdTime;
+    if (checkOutThresholdTime) updateData.checkOutThresholdTime = checkOutThresholdTime;
 
     if (!config) {
       // Create if doesn't exist
       config = await prisma.attendanceConfig.create({
         data: {
-          lateThresholdTime,
+          lateThresholdTime: lateThresholdTime || '07:30',
+          checkOutThresholdTime: checkOutThresholdTime || '16:00',
           updatedBy: adminId
         }
       });
@@ -324,11 +366,7 @@ exports.updateConfig = async (req, res) => {
       // Update existing
       config = await prisma.attendanceConfig.update({
         where: { id: config.id },
-        data: {
-          lateThresholdTime,
-          updatedBy: adminId,
-          updatedAt: new Date()
-        }
+        data: updateData
       });
     }
 
@@ -337,11 +375,4 @@ exports.updateConfig = async (req, res) => {
       config: {
         id: config.id,
         lateThresholdTime: config.lateThresholdTime,
-        updatedAt: config.updatedAt
-      }
-    });
-  } catch (error) {
-    console.error('Update config error:', error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
-  }
-};
+        checkOutThresholdTime: config.checkOutThresholdTime,

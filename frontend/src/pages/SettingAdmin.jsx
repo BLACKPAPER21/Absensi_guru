@@ -4,7 +4,8 @@ import { API_BASE } from '../utils/api';
 
 export default function SettingAdmin() {
   const [config, setConfig] = useState({
-    lateThresholdTime: '07:30'
+    lateThresholdTime: '07:30',
+    checkOutThresholdTime: '16:00'
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -23,10 +24,11 @@ export default function SettingAdmin() {
         }
       });
       const data = await response.json();
-      
+
       if (response.ok && data.config) {
         setConfig({
-          lateThresholdTime: data.config.lateThresholdTime
+          lateThresholdTime: data.config.lateThresholdTime,
+          checkOutThresholdTime: data.config.checkOutThresholdTime
         });
       }
     } catch (error) {
@@ -45,19 +47,25 @@ export default function SettingAdmin() {
     }));
   };
 
+  const validateTimeFormat = (timeStr) => {
+    if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) {
+      return false;
+    }
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
-    
-    // Validate time format
-    if (!/^\d{2}:\d{2}$/.test(config.lateThresholdTime)) {
-      setMessage({ text: 'Format waktu tidak valid. Gunakan format HH:mm (contoh: 07:30)', type: 'error' });
+
+    // Validate time formats
+    if (!validateTimeFormat(config.lateThresholdTime)) {
+      setMessage({ text: 'Format jam datang tidak valid. Gunakan HH:mm (contoh: 07:30)', type: 'error' });
       return;
     }
 
-    // Validate hours and minutes
-    const [hours, minutes] = config.lateThresholdTime.split(':').map(Number);
-    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-      setMessage({ text: 'Jam: 0-23, Menit: 0-59', type: 'error' });
+    if (!validateTimeFormat(config.checkOutThresholdTime)) {
+      setMessage({ text: 'Format jam pulang tidak valid. Gunakan HH:mm (contoh: 16:00)', type: 'error' });
       return;
     }
 
@@ -71,7 +79,8 @@ export default function SettingAdmin() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          lateThresholdTime: config.lateThresholdTime
+          lateThresholdTime: config.lateThresholdTime,
+          checkOutThresholdTime: config.checkOutThresholdTime
         })
       });
 
@@ -80,7 +89,8 @@ export default function SettingAdmin() {
       if (response.ok) {
         setMessage({ text: 'Pengaturan berhasil disimpan!', type: 'success' });
         setConfig({
-          lateThresholdTime: data.config.lateThresholdTime
+          lateThresholdTime: data.config.lateThresholdTime,
+          checkOutThresholdTime: data.config.checkOutThresholdTime
         });
         // Auto clear success message after 3 seconds
         setTimeout(() => setMessage({ text: '', type: '' }), 3000);
@@ -107,8 +117,8 @@ export default function SettingAdmin() {
       {/* Message Alert */}
       {message.text && (
         <div className={`mb-6 p-4 rounded-lg border ${
-          message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-800' 
+          message.type === 'success'
+            ? 'bg-green-50 border-green-200 text-green-800'
             : 'bg-red-50 border-red-200 text-red-800'
         }`}>
           <div className="flex items-center gap-2">
@@ -140,7 +150,7 @@ export default function SettingAdmin() {
               {/* Late Threshold Time Setting */}
               <div className="space-y-2">
                 <label className="block font-label-md text-on-background">
-                  Batas Waktu Datang (Jam Terlambat)
+                  🌅 Batas Waktu Datang (Jam Terlambat)
                 </label>
                 <p className="text-label-sm text-on-surface-variant mb-3">
                   Guru yang datang setelah jam ini akan ditandai sebagai "TERLAMBAT"
@@ -158,23 +168,52 @@ export default function SettingAdmin() {
                       Jam: <span className="font-semibold text-secondary">{config.lateThresholdTime}</span>
                     </p>
                     <p className="text-label-sm text-on-surface-variant">
-                      {config.lateThresholdTime && 
+                      {config.lateThresholdTime &&
                         `Guru datang sebelum ${config.lateThresholdTime} = HADIR`
                       }
                     </p>
                   </div>
                 </div>
+              </div>
 
-                {/* Time Format Info */}
-                <div className="mt-4 p-3 bg-secondary-container/30 rounded-lg border border-secondary-container/50">
-                  <p className="text-label-sm text-on-surface-variant flex items-start gap-2">
-                    <span className="material-symbols-outlined text-sm mt-0.5">info</span>
-                    <span>
-                      <strong>Format:</strong> Gunakan format 24 jam (HH:mm). 
-                      Contoh: 07:30 untuk jam 7:30 pagi, 16:00 untuk jam 4:00 sore
-                    </span>
-                  </p>
+              {/* Check-Out Threshold Time Setting */}
+              <div className="space-y-2 pt-4 border-t border-surface-variant">
+                <label className="block font-label-md text-on-background">
+                  🌆 Batas Waktu Pulang (Indikator Pulang Awal)
+                </label>
+                <p className="text-label-sm text-on-surface-variant mb-3">
+                  Guru yang pulang sebelum jam ini akan ditandai sebagai "PULANG AWAL" (informasi saja, tidak ada penalti)
+                </p>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="time"
+                    name="checkOutThresholdTime"
+                    value={config.checkOutThresholdTime}
+                    onChange={handleInputChange}
+                    className="px-4 py-2 border border-outline-variant rounded-lg font-body-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary bg-surface-container-lowest"
+                  />
+                  <div className="flex-1">
+                    <p className="text-label-md text-on-background">
+                      Jam: <span className="font-semibold text-secondary">{config.checkOutThresholdTime}</span>
+                    </p>
+                    <p className="text-label-sm text-on-surface-variant">
+                      {config.checkOutThresholdTime &&
+                        `Guru pulang sebelum ${config.checkOutThresholdTime} = PULANG AWAL`
+                      }
+                    </p>
+                  </div>
                 </div>
+              </div>
+
+              {/* Time Format Info */}
+              <div className="mt-4 p-3 bg-secondary-container/30 rounded-lg border border-secondary-container/50">
+                <p className="text-label-sm text-on-surface-variant flex items-start gap-2">
+                  <span className="material-symbols-outlined text-sm mt-0.5">info</span>
+                  <span>
+                    <strong>Format:</strong> Gunakan format 24 jam (HH:mm).
+                    Contoh: 07:30 untuk jam 7:30 pagi, 16:00 untuk jam 4:00 sore
+                  </span>
+                </p>
               </div>
 
               {/* Save Button */}
@@ -218,16 +257,16 @@ export default function SettingAdmin() {
               </div>
               <div className="space-y-3 text-label-sm text-on-surface-variant">
                 <div>
-                  <p className="font-semibold text-on-background mb-1">1. Check-in Hadir</p>
-                  <p>Guru yang check-in sebelum jam yang ditentukan = HADIR</p>
+                  <p className="font-semibold text-on-background mb-1">1. Check-in Datang</p>
+                  <p>Sebelum threshold = HADIR, Setelah = TERLAMBAT</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-on-background mb-1">2. Check-in Terlambat</p>
-                  <p>Guru yang check-in setelah jam yang ditentukan = TERLAMBAT</p>
+                  <p className="font-semibold text-on-background mb-1">2. Check-out Pulang</p>
+                  <p>Sebelum threshold = Pulang Awal (info), Sesudah = Normal</p>
                 </div>
                 <div>
                   <p className="font-semibold text-on-background mb-1">3. Perubahan Langsung</p>
-                  <p>Perubahan akan langsung berlaku untuk check-in berikutnya</p>
+                  <p>Perubahan berlaku untuk check-in/out berikutnya</p>
                 </div>
               </div>
             </div>
@@ -238,10 +277,14 @@ export default function SettingAdmin() {
                 <span className="material-symbols-outlined text-primary">schedule</span>
                 <h4 className="font-label-md text-on-background">Status Saat Ini</h4>
               </div>
-              <div className="space-y-2 text-label-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-on-surface-variant">Batas Waktu:</span>
+              <div className="space-y-3 text-label-sm">
+                <div className="flex justify-between items-center pb-3 border-b border-primary-fixed/20">
+                  <span className="text-on-surface-variant">🌅 Batas Datang:</span>
                   <span className="font-semibold text-on-background text-base">{config.lateThresholdTime}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-on-surface-variant">🌆 Batas Pulang:</span>
+                  <span className="font-semibold text-on-background text-base">{config.checkOutThresholdTime}</span>
                 </div>
               </div>
             </div>
