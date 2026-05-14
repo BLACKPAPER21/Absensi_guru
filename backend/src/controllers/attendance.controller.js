@@ -348,7 +348,7 @@ exports.updateConfig = async (req, res) => {
     }
 
     let config = await prisma.attendanceConfig.findFirst();
-    
+
     const updateData = { updatedBy: adminId, updatedAt: new Date() };
     if (lateThresholdTime) updateData.lateThresholdTime = lateThresholdTime;
     if (checkOutThresholdTime) updateData.checkOutThresholdTime = checkOutThresholdTime;
@@ -376,3 +376,12 @@ exports.updateConfig = async (req, res) => {
         id: config.id,
         lateThresholdTime: config.lateThresholdTime,
         checkOutThresholdTime: config.checkOutThresholdTime,
+        updatedBy: config.updatedBy,
+        updatedAt: config.updatedAt,
+      }
+    });
+  } catch (error) {
+    console.error('Error updating attendance config:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
