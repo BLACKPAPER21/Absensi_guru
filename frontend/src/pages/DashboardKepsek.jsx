@@ -29,9 +29,12 @@ export default function DashboardKepsek() {
   const [todayRecords, setTodayRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [latestReportMonth, setLatestReportMonth] = useState('');
 
   useEffect(() => {
     fetchData();
+    fetchLatestReportMonth();
   }, []);
 
   const fetchData = async () => {
@@ -61,6 +64,53 @@ export default function DashboardKepsek() {
       setErrorMsg(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchLatestReportMonth = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/api/reports/recent`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && Array.isArray(data.reports) && data.reports.length > 0) {
+        setLatestReportMonth(data.reports[0].month);
+      }
+    } catch (err) {
+      console.error('Failed to fetch latest report month:', err);
+    }
+  };
+
+  const handleDownloadLatestReport = async () => {
+    setIsDownloadingReport(true);
+    try {
+      const token = localStorage.getItem('token');
+      const reportMonth = latestReportMonth || new Date().toISOString().slice(0, 7);
+      const response = await fetch(`${API_BASE}/api/reports/monthly/pdf?month=${reportMonth}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Gagal mengunduh laporan');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Rekap_Absensi_${reportMonth}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    } catch (err) {
+      setErrorMsg(err.message);
+    } finally {
+      setIsDownloadingReport(false);
     }
   };
 
@@ -216,8 +266,15 @@ export default function DashboardKepsek() {
                 <div>
                   <h4 className="font-label-md font-bold">Laporan Akhir Bulan</h4>
                   <p className="font-body-sm mt-1 opacity-90">Laporan absensi bulan ini siap untuk direview dan dicetak.</p>
-                  <button className="mt-3 w-full bg-secondary text-white py-2 rounded font-label-sm text-xs hover:bg-secondary/90 transition flex justify-center items-center gap-1">
-                    <span className="material-symbols-outlined text-[16px]">download</span> UNDUH PDF
+                  <button
+                    onClick={handleDownloadLatestReport}
+                    disabled={isDownloadingReport}
+                    className="mt-3 w-full bg-secondary text-white py-2 rounded font-label-sm text-xs hover:bg-secondary/90 transition flex justify-center items-center gap-1 disabled:opacity-60"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      {isDownloadingReport ? 'hourglass_empty' : 'download'}
+                    </span>
+                    {isDownloadingReport ? 'MENGUNDUH...' : 'UNDUH PDF'}
                   </button>
                 </div>
               </div>
