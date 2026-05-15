@@ -19,8 +19,17 @@ const initialForm = {
   room: '',
   startTime: '09:00',
   endTime: '10:30',
-  expectedStudents: 0,
   active: true,
+};
+
+const dayNameToNumber = {
+  senin: 1,
+  selasa: 2,
+  rabu: 3,
+  kamis: 4,
+  jumat: 5,
+  sabtu: 6,
+  minggu: 0,
 };
 
 const isValidTime = (timeStr) => {
@@ -33,9 +42,13 @@ export default function ScheduleAdmin() {
   const [teachers, setTeachers] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [form, setForm] = useState(initialForm);
+  const [bulkUserId, setBulkUserId] = useState('');
+  const [bulkInput, setBulkInput] = useState('');
+  const [bulkActive, setBulkActive] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isBulkSaving, setIsBulkSaving] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
 
   const dayLabelByValue = useMemo(() => {
@@ -98,7 +111,6 @@ export default function ScheduleAdmin() {
       room: schedule.room,
       startTime: schedule.startTime,
       endTime: schedule.endTime,
-      expectedStudents: schedule.expectedStudents || 0,
       active: schedule.active
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -154,7 +166,6 @@ export default function ScheduleAdmin() {
       const token = localStorage.getItem('token');
       const payload = {
         ...form,
-        expectedStudents: Number(form.expectedStudents),
         dayOfWeek: Number(form.dayOfWeek)
       };
 
@@ -182,6 +193,80 @@ export default function ScheduleAdmin() {
       setMessage({ text: error.message, type: 'error' });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleBulkSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!bulkUserId) {
+      setMessage({ text: 'Pilih guru untuk input cepat', type: 'error' });
+      return;
+    }
+
+    const lines = bulkInput
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    if (lines.length === 0) {
+      setMessage({ text: 'Isi minimal satu baris jadwal', type: 'error' });
+      return;
+    }
+
+    try {
+      const entries = lines.map((line, idx) => {
+        const parts = line.split('|').map((v) => v.trim());
+        if (parts.length !== 5) {
+          throw new Error(`Format baris ${idx + 1} salah. Gunakan: Hari|Mapel|Ruangan|Mulai|Selesai`);
+        }
+
+        const [dayName, subject, room, startTime, endTime] = parts;
+        const dayOfWeek = dayNameToNumber[dayName.toLowerCase()];
+
+        if (dayOfWeek === undefined) {
+          throw new Error(`Hari di baris ${idx + 1} tidak valid`);
+        }
+        if (!subject || !room) {
+          throw new Error(`Mapel/ruangan di baris ${idx + 1} tidak boleh kosong`);
+        }
+        if (!isValidTime(startTime) || !isValidTime(endTime)) {
+          throw new Error(`Jam di baris ${idx + 1} harus format HH:mm`);
+        }
+        if (endTime <= startTime) {
+          throw new Error(`Jam selesai di baris ${idx + 1} harus lebih besar dari jam mulai`);
+        }
+
+        return { dayOfWeek, subject, room, startTime, endTime };
+      });
+
+      setIsBulkSaving(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/api/schedules/bulk`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: bulkUserId,
+          active: bulkActive,
+          entries
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Gagal menambah jadwal cepat');
+      }
+
+      setMessage({ text: data.message || 'Jadwal cepat berhasil ditambahkan', type: 'success' });
+      setBulkInput('');
+      fetchData();
+    } catch (error) {
+      setMessage({ text: error.message, type: 'error' });
+    } finally {
+      setIsBulkSaving(false);
     }
   };
 
@@ -293,18 +378,6 @@ export default function ScheduleAdmin() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-on-surface">Perkiraan Siswa</label>
-              <input
-                type="number"
-                name="expectedStudents"
-                min="0"
-                value={form.expectedStudents}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-background focus:outline-none focus:border-secondary"
-              />
-            </div>
-
             <label className="flex items-center gap-3 text-sm text-on-surface">
               <input
                 type="checkbox"
@@ -398,6 +471,66 @@ export default function ScheduleAdmin() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="mt-6 bg-surface-container-lowest rounded-xl border border-surface-variant shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-surface-variant bg-surface-container-low">
+          <h3 className="font-headline-md text-on-background flex items-center gap-2">
+            <span className="material-symbols-outlined text-secondary">bolt</span>
+            Input Cepat Banyak Jadwal
+          </h3>
+          <p className="text-sm text-on-surface-variant mt-1">Format per baris: Hari|Mapel|Ruangan|Mulai|Selesai</p>
+        </div>
+
+        <form onSubmit={handleBulkSubmit} className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="space-y-4 lg:col-span-1">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-on-surface">Guru</label>
+              <select
+                value={bulkUserId}
+                onChange={(e) => setBulkUserId(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-background focus:outline-none focus:border-secondary"
+              >
+                <option value="">Pilih guru</option>
+                {teachers.map((teacher) => (
+                  <option key={teacher.id} value={teacher.id}>
+                    {teacher.name} {teacher.dept ? `- ${teacher.dept}` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="flex items-center gap-3 text-sm text-on-surface">
+              <input
+                type="checkbox"
+                checked={bulkActive}
+                onChange={(e) => setBulkActive(e.target.checked)}
+                className="w-4 h-4 accent-teal-700"
+              />
+              Semua jadwal aktif
+            </label>
+
+            <button
+              type="submit"
+              disabled={isBulkSaving}
+              className="w-full bg-secondary text-white px-4 py-3 rounded-lg font-medium hover:bg-secondary/90 transition-colors disabled:opacity-60"
+            >
+              {isBulkSaving ? 'Menyimpan...' : 'Simpan Sekaligus'}
+            </button>
+          </div>
+
+          <div className="lg:col-span-2 space-y-2">
+            <label className="block text-sm font-medium text-on-surface">Daftar Jadwal</label>
+            <textarea
+              value={bulkInput}
+              onChange={(e) => setBulkInput(e.target.value)}
+              rows={8}
+              placeholder={"Senin|Matematika 101|Ruang 304 B|09:00|10:30\nSelasa|Fisika Dasar|Lab IPA 2|10:45|12:15\nRabu|Kimia|Lab Kimia|07:30|09:00"}
+              className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-background focus:outline-none focus:border-secondary resize-y"
+            />
+            <p className="text-xs text-on-surface-variant">Hari yang didukung: Senin, Selasa, Rabu, Kamis, Jumat, Sabtu, Minggu.</p>
+          </div>
+        </form>
       </div>
     </DashboardLayout>
   );

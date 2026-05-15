@@ -9,7 +9,7 @@ export default function DashboardGuru() {
   const [cameraAction, setCameraAction] = useState(null); // 'check-in' or 'check-out'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  
+
   // Dynamic Data States
   const [stats, setStats] = useState({ hadir: 0, terlambat: 0, izin: 0 });
   const [recentActivity, setRecentActivity] = useState([]);
@@ -21,7 +21,7 @@ export default function DashboardGuru() {
   useEffect(() => {
     // Live clock
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    
+
     // Fetch data
     fetchDashboardData();
 
@@ -31,13 +31,13 @@ export default function DashboardGuru() {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
-      
+
       // Fetch Attendance History
       const attRes = await fetch(`${API_BASE}/api/attendance/history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const attData = await attRes.json();
-      
+
       // Fetch Leave Requests
       const leaveRes = await fetch(`${API_BASE}/api/leave/my-requests`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -58,13 +58,13 @@ export default function DashboardGuru() {
           if (record.status === 'HADIR') hadirCount++;
           if (record.status === 'TERLAMBAT') terlambatCount++;
         });
-        
+
         // Populate recent activity (take top 3)
         setRecentActivity(attData.history.slice(0, 3));
-        
+
         // If checked in today, set the status
         // Ensure we use local date string (YYYY-MM-DD) instead of UTC to avoid timezone mismatch issues
-        const todayStr = new Date().toLocaleDateString('en-CA'); 
+        const todayStr = new Date().toLocaleDateString('en-CA');
         const todayRecord = attData.history.find(r => {
           const recordDateLocal = new Date(r.date).toLocaleDateString('en-CA');
           return recordDateLocal === todayStr;
@@ -126,8 +126,8 @@ export default function DashboardGuru() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('You are not logged in');
 
-      const endpoint = cameraAction === 'check-in' 
-        ? `${API_BASE}/api/attendance/check-in` 
+      const endpoint = cameraAction === 'check-in'
+        ? `${API_BASE}/api/attendance/check-in`
         : `${API_BASE}/api/attendance/check-out`;
 
       const response = await fetch(endpoint, {
@@ -144,7 +144,7 @@ export default function DashboardGuru() {
 
       setAttendanceStatus(cameraAction === 'check-in' ? 'Checked In' : 'Checked Out');
       fetchDashboardData(); // Refresh the stats
-      
+
     } catch (err) {
       console.error(err);
       setErrorMsg(err.message || 'Failed to get location or submit data');
@@ -157,9 +157,9 @@ export default function DashboardGuru() {
   return (
     <DashboardLayout userRole="guru">
       {showCamera && (
-        <CameraCapture 
-          onCapture={processAttendance} 
-          onCancel={() => setShowCamera(false)} 
+        <CameraCapture
+          onCapture={processAttendance}
+          onCancel={() => setShowCamera(false)}
         />
       )}
 
@@ -203,7 +203,7 @@ export default function DashboardGuru() {
             </div>
           </div>
           <div className="flex gap-4 mt-8 z-10 relative">
-            <button 
+            <button
               onClick={() => openCameraFor('check-in')}
               disabled={isSubmitting || attendanceStatus === 'Checked In' || attendanceStatus === 'Checked Out'}
               className="flex-1 bg-secondary text-on-secondary py-3 px-6 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2 hover:bg-on-secondary-fixed-variant transition-colors disabled:opacity-50"
@@ -211,7 +211,7 @@ export default function DashboardGuru() {
               <span className="material-symbols-outlined">login</span>
               {isSubmitting && cameraAction === 'check-in' ? 'Memproses...' : 'Check In'}
             </button>
-            <button 
+            <button
               onClick={() => openCameraFor('check-out')}
               disabled={isSubmitting || attendanceStatus === null || attendanceStatus === 'Checked Out'}
               className="flex-1 border border-outline text-on-surface py-3 px-6 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2 hover:bg-surface-container transition-colors disabled:opacity-50"
@@ -244,15 +244,6 @@ export default function DashboardGuru() {
                 <p className="font-body-md text-body-md text-on-surface-variant mt-1 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">schedule</span> {todaySchedule.startTime} - {todaySchedule.endTime} WIB
                 </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-surface-variant">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-sm text-label-sm text-on-surface-variant">Siswa Diharapkan</span>
-                  <span className="font-label-sm text-label-sm text-on-background font-bold">{todaySchedule.expectedStudents || 0}</span>
-                </div>
-                <div className="w-full bg-surface-container h-2 rounded-full mt-2 overflow-hidden">
-                  <div className="bg-secondary h-full rounded-full" style={{ width: `${Math.min(todaySchedule.expectedStudents || 0, 30) / 30 * 100}%` }}></div>
-                </div>
               </div>
             </>
           ) : (

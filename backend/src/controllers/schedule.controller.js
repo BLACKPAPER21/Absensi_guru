@@ -8,6 +8,16 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 const DAY_NAMES = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const DAY_NAME_TO_NUMBER = {
+  minggu: 0,
+  senin: 1,
+  selasa: 2,
+  rabu: 3,
+  kamis: 4,
+  jumat: 5,
+  "jum'at": 5,
+  sabtu: 6,
+};
 
 const timeToMinutes = (timeStr) => {
   const [hours, minutes] = timeStr.split(':').map(Number);
@@ -107,7 +117,7 @@ exports.getAllSchedules = async (req, res) => {
 
 exports.createSchedule = async (req, res) => {
   try {
-    const { userId, dayOfWeek, subject, room, startTime, endTime, expectedStudents, active } = req.body;
+    const { userId, dayOfWeek, subject, room, startTime, endTime, active } = req.body;
 
     if (!userId || dayOfWeek === undefined || !subject || !room || !startTime || !endTime) {
       return res.status(400).json({ message: 'Please provide all required fields' });
@@ -134,7 +144,6 @@ exports.createSchedule = async (req, res) => {
         room,
         startTime,
         endTime,
-        expectedStudents: expectedStudents ? Number(expectedStudents) : 0,
         active: active !== undefined ? Boolean(active) : true
       },
       include: {
@@ -159,7 +168,7 @@ exports.createSchedule = async (req, res) => {
 exports.updateSchedule = async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId, dayOfWeek, subject, room, startTime, endTime, expectedStudents, active } = req.body;
+    const { userId, dayOfWeek, subject, room, startTime, endTime, active } = req.body;
 
     const updateData = {};
 
@@ -185,7 +194,6 @@ exports.updateSchedule = async (req, res) => {
       }
       updateData.endTime = endTime;
     }
-    if (expectedStudents !== undefined) updateData.expectedStudents = Number(expectedStudents);
     if (active !== undefined) updateData.active = Boolean(active);
 
     if (updateData.startTime && updateData.endTime && timeToMinutes(updateData.endTime) <= timeToMinutes(updateData.startTime)) {
@@ -211,6 +219,64 @@ exports.updateSchedule = async (req, res) => {
   } catch (error) {
     console.error('Update schedule error:', error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
+exports.createBulkSchedules = async (req, res) => {
+  try {
+    const { userId, entries, active } = req.body;
+
+    if (!userId || !Array.isArray(entries) || entries.length === 0) {
+      return res.status(400).json({ message: 'userId and entries are required' });
+    }
+
+    const parsedEntries = entries.map((entry, index) => {
+      const { dayOfWeek, dayName, subject, room, startTime, endTime } = entry;
+
+      let normalizedDay = dayOfWeek;
+      if (normalizedDay === undefined && dayName) {
+        normalizedDay = DAY_NAME_TO_NUMBER[String(dayName).toLowerCase().trim()];
+      }
+
+      const dayNumber = Number(normalizedDay);
+      if (Number.isNaN(dayNumber) || dayNumber < 0 || dayNumber > 6) {
+        throw new Error(`Entry ${index + 1}: day is invalid`);
+      }
+
+      if (!subject || !room || !startTime || !endTime) {
+        throw new Error(`Entry ${index + 1}: subject, room, startTime, endTime are required`);
+      }
+
+      if (!isValidTime(startTime) || !isValidTime(endTime)) {
+        throw new Error(`Entry ${index + 1}: invalid time format (use HH:mm)`);
+      }
+
+      if (timeToMinutes(endTime) <= timeToMinutes(startTime)) {
+        throw new Error(`Entry ${index + 1}: endTime must be later than startTime`);
+      }
+
+      return {
+        userId,
+        dayOfWeek: dayNumber,
+        subject: subject.trim(),
+        room: room.trim(),
+        startTime,
+        endTime,
+        active: active !== undefined ? Boolean(active) : true,
+      };
+    });
+
+    await prisma.$transaction(
+      parsedEntries.map((entry) => prisma.classSchedule.create({ data: entry }))
+    );
+
+    res.status(201).json({
+      message: `${parsedEntries.length} jadwal berhasil ditambahkan`,
+      count: parsedEntries.length,
+    });
+  } catch (error) {
+    console.error('Create bulk schedules error:', error);
+    res.status(400).json({ message: error.message || 'Failed to create schedules in bulk' });
   }
 };
 

@@ -8,6 +8,7 @@ router.use(verifyToken);
 router.get('/today', scheduleController.getTodaySchedule);
 router.get('/', requireRole(['ADMIN', 'KEPSEK']), scheduleController.getAllSchedules);
 router.post('/', requireRole(['ADMIN']), scheduleController.createSchedule);
+router.post('/bulk', requireRole(['ADMIN']), scheduleController.createBulkSchedules);
 router.put('/:id', requireRole(['ADMIN']), scheduleController.updateSchedule);
 router.delete('/:id', requireRole(['ADMIN']), scheduleController.deleteSchedule);
 
